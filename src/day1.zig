@@ -20,15 +20,6 @@ test "num_of_increases" {
     try std.testing.expectEqual(expect, num_of_increases(input[0..]));
 }
 
-fn ring_idx(size: usize, idx: usize, push: usize) usize {
-    const potential = idx + push;
-    if (potential >= size) {
-        return potential - size;
-    } else {
-        return potential;
-    }
-}
-
 pub fn three_window_num_of_increases(input: []const i32) i32 {
     var increases: i32 = 0;
     var sum: i32 = 0;
