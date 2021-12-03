@@ -27,15 +27,10 @@ pub fn main() anyerror!void {
     var allocator = &arena.allocator;
 
     // Day 1
-    const day1_part1_list = try get_number_list(allocator, std.io.fixedBufferStream(day1_input).reader());
-    const day1_part1_sol = day1.num_of_increases(day1_part1_list.items);
+    const day1_part1_sol = try day1.num_of_increases(allocator, day1_input);
     print("day1 part1 solution: {d}\n", .{day1_part1_sol});
-    day1_part1_list.deinit();
-
-    const day1_part2_list = try get_number_list(allocator, std.io.fixedBufferStream(day1_input).reader());
-    const day1_part2_sol = day1.three_window_num_of_increases(day1_part2_list.items);
+    const day1_part2_sol = try day1.three_window_num_of_increases(allocator, day1_input);
     print("day1 part2 solution: {d}\n", .{day1_part2_sol});
-    day1_part2_list.deinit();
 
     // Day 2
     const day2_part1_sol = day2.submarine_position(day2_input);
