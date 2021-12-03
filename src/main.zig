@@ -6,21 +6,6 @@ const day2 = @import("./day2.zig");
 const day1_input = @embedFile("../inputs/day1/input.txt");
 const day2_input = @embedFile("../inputs/day2/input.txt");
 
-fn get_number_list(a: *std.mem.Allocator, r: anytype) anyerror!std.ArrayList(i32) {
-    var msg_buf: [4096]u8 = undefined;
-    var list = std.ArrayList(i32).init(a);
-    while (true) {
-        var msg = try r.readUntilDelimiterOrEof(&msg_buf, '\n');
-        if (msg) |m| {
-            const t = try std.fmt.parseInt(i32, m, 0);
-            try list.append(t);
-        } else {
-            break;
-        }
-    }
-    return list;
-}
-
 pub fn main() anyerror!void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
