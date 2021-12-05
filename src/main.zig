@@ -29,6 +29,6 @@ pub fn main() anyerror!void {
     // Day 3
     const day3_part1_sol = day3.power_consumption(day3_input);
     print("day3 part1 solution: {d}\n", .{day3_part1_sol});
-    // const day2_part2_sol = day2.submarine_position_with_aim(day2_input);
-    // print("day2 part2 solution: {d}\n", .{day2_part2_sol});
+    const day3_part2_sol = day3.life_support_rating(day3_input);
+    print("day3 part2 solution: {d}\n", .{day3_part2_sol});
 }
