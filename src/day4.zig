@@ -2,10 +2,54 @@ const std = @import("std");
 
 const ascii_space = 32;
 
-pub fn bingo_winner(input: []const u8) u32 {
+const marked: i32 = -1;
+
+const Board = struct {
+    lines: [5][5]i32,
+
+    pub fn mark(self: *Board, num_to_mark: i32) void {
+        for (self.lines) |*line| {
+            for (line) |*num| {
+                if (num.* == num_to_mark) num.* = marked;
+            }
+        }
+    }
+
+    pub fn is_complete(self: *Board) bool {
+        for ([_]i32{ 0, 0, 0, 0, 0 }) |_, i| {
+            var column_check = true;
+            var row_check = true;
+            for ([_]i32{ 0, 0, 0, 0, 0 }) |_, j| {
+                if (row_check == true and self.lines[i][j] != marked) {
+                    row_check = false;
+                }
+                if (column_check == true and self.lines[j][i] != marked) {
+                    column_check = false;
+                }
+            }
+            if (column_check or row_check) return true;
+        }
+
+        return false;
+    }
+
+    pub fn winning_total(self: *Board) i32 {
+        var total: i32 = 0;
+        for (self.lines) |line| {
+            for (line) |num| {
+                if (num != marked)
+                    total += num;
+            }
+        }
+        return total;
+    }
+};
+
+pub fn bingo_winner(input: []const u8) i32 {
     var input_split = std.mem.split(u8, input, "\n");
     const draw = input_split.next().?;
-    std.debug.print("\ndraw: {s}\n", .{draw});
+
+    var boards_arr: [4096]Board = undefined;
 
     var i: u32 = 0;
     while (true) {
@@ -19,19 +63,45 @@ pub fn bingo_winner(input: []const u8) u32 {
         const line4 = input_split.next().?;
         const line5 = input_split.next().?;
 
-        std.debug.print("\nget_line_nums(line1): {any}\n", .{get_line_nums(line1)});
-        std.debug.print("\nget_line_nums(line2): {any}\n", .{get_line_nums(line2)});
-        std.debug.print("\nget_line_nums(line3): {any}\n", .{get_line_nums(line3)});
-        std.debug.print("\nget_line_nums(line4): {any}\n", .{get_line_nums(line4)});
-        std.debug.print("\nget_line_nums(line5): {any}\n", .{get_line_nums(line5)});
+        var board = Board{
+            .lines = [5][5]i32{
+                get_line_nums(line1),
+                get_line_nums(line2),
+                get_line_nums(line3),
+                get_line_nums(line4),
+                get_line_nums(line5),
+            },
+        };
 
+        boards_arr[i] = board;
         i += 1;
     }
+    var boards = boards_arr[0..i];
 
-    return 0;
+    var draw_split = std.mem.split(u8, draw, ",");
+
+    var winner_board: Board = undefined;
+    var winner_mark: i32 = 0;
+
+    outer: while (true) {
+        const m_mark = draw_split.next();
+        if (m_mark) |mark| {
+            const int_mark = std.fmt.parseInt(i32, mark, 10) catch unreachable;
+            for (boards) |*board| {
+                board.mark(int_mark);
+                if (board.is_complete()) {
+                    winner_board = board.*;
+                    winner_mark = int_mark;
+                    break :outer;
+                }
+            }
+        } else break;
+    }
+
+    return winner_board.winning_total() * winner_mark;
 }
 
-fn get_line_nums(line: []const u8) [5]u32 {
+fn get_line_nums(line: []const u8) [5]i32 {
     var in_word = false;
     var line_replacement: [4096]u8 = undefined;
     var replacement_idx: u32 = 0;
@@ -49,13 +119,13 @@ fn get_line_nums(line: []const u8) [5]u32 {
     }
 
     var line_split = std.mem.split(u8, line_replacement[0..replacement_idx], " ");
-    const num1 = std.fmt.parseInt(u32, line_split.next().?, 10) catch unreachable;
-    const num2 = std.fmt.parseInt(u32, line_split.next().?, 10) catch unreachable;
-    const num3 = std.fmt.parseInt(u32, line_split.next().?, 10) catch unreachable;
-    const num4 = std.fmt.parseInt(u32, line_split.next().?, 10) catch unreachable;
-    const num5 = std.fmt.parseInt(u32, line_split.next().?, 10) catch unreachable;
+    const num1 = std.fmt.parseInt(i32, line_split.next().?, 10) catch unreachable;
+    const num2 = std.fmt.parseInt(i32, line_split.next().?, 10) catch unreachable;
+    const num3 = std.fmt.parseInt(i32, line_split.next().?, 10) catch unreachable;
+    const num4 = std.fmt.parseInt(i32, line_split.next().?, 10) catch unreachable;
+    const num5 = std.fmt.parseInt(i32, line_split.next().?, 10) catch unreachable;
 
-    return [_]u32{ num1, num2, num3, num4, num5 };
+    return [5]i32{ num1, num2, num3, num4, num5 };
 }
 
 const test_input =
@@ -82,6 +152,6 @@ const test_input =
 ;
 
 test "bingo_winner" {
-    const expect: u32 = 4512;
+    const expect: i32 = 4512;
     try std.testing.expectEqual(expect, bingo_winner(test_input.*[0..]));
 }
