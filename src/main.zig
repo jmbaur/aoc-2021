@@ -5,11 +5,13 @@ const day1 = @import("./day1.zig");
 const day2 = @import("./day2.zig");
 const day3 = @import("./day3.zig");
 const day4 = @import("./day4.zig");
+const day5 = @import("./day5.zig");
 
 const day1_input = @embedFile("../inputs/day1/input.txt");
 const day2_input = @embedFile("../inputs/day2/input.txt");
 const day3_input = @embedFile("../inputs/day3/input.txt");
 const day4_input = @embedFile("../inputs/day4/input.txt");
+const day5_input = @embedFile("../inputs/day5/input.txt");
 
 pub fn main() anyerror!void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -39,4 +41,8 @@ pub fn main() anyerror!void {
     print("day4 part1 solution: {d}\n", .{day4_part1_sol});
     const day4_part2_sol = day4.bingo(day4.BingoType.loser, day4_input);
     print("day4 part2 solution: {d}\n", .{day4_part2_sol});
+
+    // Day 5
+    const day5_part1_sol = day5.avoid_vents(day5_input);
+    print("day5 part1 solution: {d}\n", .{day5_part1_sol});
 }
