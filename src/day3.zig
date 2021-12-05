@@ -143,11 +143,9 @@ const test_input =
 ;
 
 test "power_consumption" {
-    const expect: u32 = 198;
-    try std.testing.expectEqual(expect, try power_consumption(test_input.*[0..]));
+    try std.testing.expectEqual(@as(u32, 198), try power_consumption(test_input.*[0..]));
 }
 
 test "life_support_rating" {
-    const expect: u32 = 230;
-    try std.testing.expectEqual(expect, try life_support_rating(test_input.*[0..]));
+    try std.testing.expectEqual(@as(u32, 230), try life_support_rating(test_input.*[0..]));
 }

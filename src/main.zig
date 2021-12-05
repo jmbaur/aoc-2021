@@ -42,5 +42,6 @@ test "day4" {
 test "day5" {
     const day5 = @import("./day5.zig");
     const day5_input = @embedFile("../inputs/day5/input.txt");
-    try std.testing.expectEqual(@as(u32, 5835), try day5.avoid_vents(day5_input));
+    try std.testing.expectEqual(@as(u32, 5835), try day5.avoid_vents(day5.Diags.exclude, day5_input));
+    try std.testing.expectEqual(@as(u32, 17013), try day5.avoid_vents(day5.Diags.include, day5_input));
 }

@@ -103,11 +103,9 @@ const test_input =
 ;
 
 test "submarine_position" {
-    const expect: i32 = 150;
-    try std.testing.expectEqual(expect, submarine_position(test_input.*[0..]));
+    try std.testing.expectEqual(@as(i32, 150), submarine_position(test_input.*[0..]));
 }
 
 test "submarine_position_with_aim" {
-    const expect: i32 = 900;
-    try std.testing.expectEqual(expect, submarine_position_with_aim(test_input.*[0..]));
+    try std.testing.expectEqual(@as(i32, 900), submarine_position_with_aim(test_input.*[0..]));
 }

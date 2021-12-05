@@ -160,11 +160,9 @@ const test_input =
 ;
 
 test "bingo_winner" {
-    const expect: i32 = 4512;
-    try std.testing.expectEqual(expect, bingo(BingoType.winner, test_input.*[0..]));
+    try std.testing.expectEqual(@as(i32, 4512), bingo(BingoType.winner, test_input.*[0..]));
 }
 
 test "bingo_loser" {
-    const expect: i32 = 1924;
-    try std.testing.expectEqual(expect, bingo(BingoType.loser, test_input.*[0..]));
+    try std.testing.expectEqual(@as(i32, 1924), bingo(BingoType.loser, test_input.*[0..]));
 }

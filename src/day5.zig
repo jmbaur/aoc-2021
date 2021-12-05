@@ -1,6 +1,11 @@
 const std = @import("std");
 const util = @import("./util.zig");
 
+pub const Diags = enum {
+    include,
+    exclude,
+};
+
 const Map = struct {
     grid: [1000][1000]?u32 = undefined,
 
@@ -12,28 +17,36 @@ const Map = struct {
         }
     }
 
-    pub fn mark(self: *Map, x1: usize, y1: usize, x2: usize, y2: usize) !void {
-        if (x1 == x2) {
+    pub fn mark_all_between(self: *Map, x1: usize, y1: usize, x2: usize, y2: usize) !void {
+        const m = slope(@intToFloat(f16, x1), @intToFloat(f16, y1), @intToFloat(f16, x2), @intToFloat(f16, y2));
+        if (@fabs(m) == std.math.inf_f16) {
+            std.debug.assert(x1 == x2);
+            var y = y2;
             const diff = get_diff(y1, y2);
-            var i = y1;
             const normal = @divFloor(diff, try std.math.absInt(diff));
-            while (i != y2) {
-                self.inc(x1, i);
-                i = @intCast(usize, @intCast(i32, i) + normal);
+            while (true) {
+                self.inc(x1, y);
+                if (y == y1) break;
+                y = @intCast(usize, @intCast(i32, y) - normal);
             }
-            self.inc(x1, y2);
-        } else if (y1 == y2) {
-            const diff = get_diff(x1, x2);
-            var i = x1;
-            const normal = @divFloor(diff, try std.math.absInt(diff));
-            while (i != x2) {
-                self.inc(i, y1);
-                i = @intCast(usize, @intCast(i32, i) + normal);
-            }
-            self.inc(x2, y1);
         } else {
-            std.debug.print("\ntodo\n", .{});
+            const bfloat = intercept(m, @intToFloat(f16, x1), @intToFloat(f16, y1));
+            const b = @floatToInt(i32, bfloat);
+
+            var x = x2;
+            const diff = get_diff(x1, x2);
+            const normal = @divFloor(diff, try std.math.absInt(diff));
+
+            while (true) {
+                const yfloat = next_y(m, @intToFloat(f16, x), @intToFloat(f16, b));
+                const y = @floatToInt(usize, yfloat);
+                self.inc(x, y);
+                if (x == x1) break;
+                x = @intCast(usize, @intCast(i32, x) - normal);
+            }
         }
+
+        if (line_is_diagonal(x1, y1, x2, y2)) return;
     }
 
     pub fn total(self: *Map) u32 {
@@ -64,7 +77,7 @@ fn line_is_diagonal(x1: usize, y1: usize, x2: usize, y2: usize) bool {
     return x1 != x2 and y1 != y2;
 }
 
-pub fn avoid_vents(input: []const u8) !u32 {
+pub fn avoid_vents(comptime diags: Diags, input: []const u8) !u32 {
     const lines = util.input_lines(input, true);
 
     var map = Map{};
@@ -83,12 +96,31 @@ pub fn avoid_vents(input: []const u8) !u32 {
         const x2 = try std.fmt.parseInt(usize, to_split.next().?, 10);
         const y2 = try std.fmt.parseInt(usize, to_split.next().?, 10);
 
-        if (line_is_diagonal(x1, y1, x2, y2)) continue;
+        switch (diags) {
+            .exclude => {
+                if (line_is_diagonal(x1, y1, x2, y2)) continue;
+            },
+            else => {},
+        }
 
-        try map.mark(x1, y1, x2, y2);
+        try map.mark_all_between(x1, y1, x2, y2);
     }
 
     return map.total();
+}
+
+pub fn avoid_vents_w_diags() void {}
+
+fn slope(x1: f16, y1: f16, x2: f16, y2: f16) f16 {
+    return (y2 - y1) / (x2 - x1);
+}
+
+fn intercept(m: f16, x: f16, y: f16) f16 {
+    return y - (m * x);
+}
+
+fn next_y(m: f16, x: f16, b: f16) f16 {
+    return m * x + b;
 }
 
 const test_input =
@@ -106,6 +138,9 @@ const test_input =
 ;
 
 test "avoid_vents" {
-    const expect: u32 = 5;
-    try std.testing.expectEqual(expect, try avoid_vents(test_input.*[0..]));
+    try std.testing.expectEqual(@as(u32, 5), try avoid_vents(Diags.exclude, test_input.*[0..]));
+}
+
+test "avoid_vents_with_diagonal_lines" {
+    try std.testing.expectEqual(@as(u32, 12), try avoid_vents(Diags.include, test_input.*[0..]));
 }
