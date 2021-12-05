@@ -4,8 +4,14 @@ const ascii_space = 32;
 
 const marked: i32 = -1;
 
+pub const BingoType = enum {
+    winner,
+    loser,
+};
+
 const Board = struct {
     lines: [5][5]i32,
+    completed: bool = false,
 
     pub fn mark(self: *Board, num_to_mark: i32) void {
         for (self.lines) |*line| {
@@ -45,7 +51,7 @@ const Board = struct {
     }
 };
 
-pub fn bingo_winner(input: []const u8) i32 {
+pub fn bingo(comptime bingo_type: BingoType, input: []const u8) i32 {
     var input_split = std.mem.split(u8, input, "\n");
     const draw = input_split.next().?;
 
@@ -89,10 +95,12 @@ pub fn bingo_winner(input: []const u8) i32 {
             const int_mark = std.fmt.parseInt(i32, mark, 10) catch unreachable;
             for (boards) |*board| {
                 board.mark(int_mark);
+                if (board.completed) continue;
                 if (board.is_complete()) {
+                    board.completed = true;
                     winner_board = board.*;
                     winner_mark = int_mark;
-                    break :outer;
+                    if (bingo_type == BingoType.winner) break :outer;
                 }
             }
         } else break;
@@ -153,5 +161,10 @@ const test_input =
 
 test "bingo_winner" {
     const expect: i32 = 4512;
-    try std.testing.expectEqual(expect, bingo_winner(test_input.*[0..]));
+    try std.testing.expectEqual(expect, bingo(BingoType.winner, test_input.*[0..]));
+}
+
+test "bingo_loser" {
+    const expect: i32 = 1924;
+    try std.testing.expectEqual(expect, bingo(BingoType.loser, test_input.*[0..]));
 }
