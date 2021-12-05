@@ -11,7 +11,7 @@
       let
         name = "aoc";
         version = "0.1.0";
-        buildInputs = [ zig.packages.x86_64-linux.master.latest ];
+        buildInputs = [ zig.packages.${system}.master.latest ];
         pkgs = nixpkgs.legacyPackages.${system};
       in
       with pkgs;
