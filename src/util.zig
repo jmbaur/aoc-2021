@@ -16,6 +16,6 @@ pub fn input_lines(input: []const u8, skip_empty_lines: bool) [][]const u8 {
 }
 
 test "input_lines" {
-    try std.testing.expectEqual(input_lines(@embedFile("../inputs/day1/input.txt"), true).len, 2000);
-    try std.testing.expectEqual(input_lines(@embedFile("../inputs/day1/input.txt"), false).len, 2001);
+    try std.testing.expectEqual(input_lines(@embedFile("../inputs/day1.txt"), true).len, 2000);
+    try std.testing.expectEqual(input_lines(@embedFile("../inputs/day1.txt"), false).len, 2001);
 }
