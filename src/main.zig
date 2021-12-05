@@ -35,8 +35,8 @@ pub fn main() anyerror!void {
     print("day3 part2 solution: {d}\n", .{day3_part2_sol});
 
     // Day 4
-    const day4_part1_sol = day4.bingo_winner(day4_input);
+    const day4_part1_sol = day4.bingo(day4.BingoType.winner, day4_input);
     print("day4 part1 solution: {d}\n", .{day4_part1_sol});
-    // const day4_part2_sol = day4.life_support_rating(day4_input);
-    // print("day4 part2 solution: {d}\n", .{day4_part2_sol});
+    const day4_part2_sol = day4.bingo(day4.BingoType.loser, day4_input);
+    print("day4 part2 solution: {d}\n", .{day4_part2_sol});
 }
