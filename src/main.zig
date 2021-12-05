@@ -1,48 +1,46 @@
 const std = @import("std");
-const print = std.debug.print;
 
-const day1 = @import("./day1.zig");
-const day2 = @import("./day2.zig");
-const day3 = @import("./day3.zig");
-const day4 = @import("./day4.zig");
-const day5 = @import("./day5.zig");
+pub fn main() void {
+    std.debug.print(
+        \\To get answers for a given day, run:
+        \\  `zig test ./src/main.zig --test-filter dayX`
+        \\
+    , .{});
+}
 
-const day1_input = @embedFile("../inputs/day1/input.txt");
-const day2_input = @embedFile("../inputs/day2/input.txt");
-const day3_input = @embedFile("../inputs/day3/input.txt");
-const day4_input = @embedFile("../inputs/day4/input.txt");
-const day5_input = @embedFile("../inputs/day5/input.txt");
-
-pub fn main() anyerror!void {
+test "day1" {
+    const day1 = @import("./day1.zig");
+    const day1_input = @embedFile("../inputs/day1/input.txt");
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     var allocator = &arena.allocator;
+    try std.testing.expectEqual(@as(i32, 1446), try day1.num_of_increases(allocator, day1_input));
+    try std.testing.expectEqual(@as(i32, 1486), try day1.three_window_num_of_increases(allocator, day1_input));
+}
 
-    // Day 1
-    const day1_part1_sol = try day1.num_of_increases(allocator, day1_input);
-    print("day1 part1 solution: {d}\n", .{day1_part1_sol});
-    const day1_part2_sol = try day1.three_window_num_of_increases(allocator, day1_input);
-    print("day1 part2 solution: {d}\n", .{day1_part2_sol});
+test "day2" {
+    const day2 = @import("./day2.zig");
+    const day2_input = @embedFile("../inputs/day2/input.txt");
+    try std.testing.expectEqual(@as(i32, 1507611), day2.submarine_position(day2_input));
+    try std.testing.expectEqual(@as(i32, 1880593125), day2.submarine_position_with_aim(day2_input));
+}
 
-    // Day 2
-    const day2_part1_sol = day2.submarine_position(day2_input);
-    print("day2 part1 solution: {d}\n", .{day2_part1_sol});
-    const day2_part2_sol = day2.submarine_position_with_aim(day2_input);
-    print("day2 part2 solution: {d}\n", .{day2_part2_sol});
+test "day3" {
+    const day3 = @import("./day3.zig");
+    const day3_input = @embedFile("../inputs/day3/input.txt");
+    try std.testing.expectEqual(@as(u32, 749376), try day3.power_consumption(day3_input));
+    try std.testing.expectEqual(@as(u32, 2372923), try day3.life_support_rating(day3_input));
+}
 
-    // Day 3
-    const day3_part1_sol = day3.power_consumption(day3_input);
-    print("day3 part1 solution: {d}\n", .{day3_part1_sol});
-    const day3_part2_sol = day3.life_support_rating(day3_input);
-    print("day3 part2 solution: {d}\n", .{day3_part2_sol});
+test "day4" {
+    const day4 = @import("./day4.zig");
+    const day4_input = @embedFile("../inputs/day4/input.txt");
+    try std.testing.expectEqual(@as(i32, 44088), day4.bingo(day4.BingoType.winner, day4_input));
+    try std.testing.expectEqual(@as(i32, 23670), day4.bingo(day4.BingoType.loser, day4_input));
+}
 
-    // Day 4
-    const day4_part1_sol = day4.bingo(day4.BingoType.winner, day4_input);
-    print("day4 part1 solution: {d}\n", .{day4_part1_sol});
-    const day4_part2_sol = day4.bingo(day4.BingoType.loser, day4_input);
-    print("day4 part2 solution: {d}\n", .{day4_part2_sol});
-
-    // Day 5
-    const day5_part1_sol = day5.avoid_vents(day5_input);
-    print("day5 part1 solution: {d}\n", .{day5_part1_sol});
+test "day5" {
+    const day5 = @import("./day5.zig");
+    const day5_input = @embedFile("../inputs/day5/input.txt");
+    try std.testing.expectEqual(@as(u32, 5835), try day5.avoid_vents(day5_input));
 }

@@ -75,11 +75,15 @@ const test_input =
 ;
 
 test "num_of_increases" {
-    const expect: i32 = 7;
-    try std.testing.expectEqual(expect, num_of_increases(test_input[0..]));
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    var allocator = &arena.allocator;
+    try std.testing.expectEqual(@as(i32, 7), try num_of_increases(allocator, test_input[0..]));
 }
 
 test "three_window_num_of_increases" {
-    const expect: i32 = 5;
-    try std.testing.expectEqual(expect, three_window_num_of_increases(test_input[0..]));
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    var allocator = &arena.allocator;
+    try std.testing.expectEqual(@as(i32, 5), try three_window_num_of_increases(allocator, test_input[0..]));
 }
