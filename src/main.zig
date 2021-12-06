@@ -13,7 +13,7 @@ test "day1" {
     const day1_input = @embedFile("../inputs/day1.txt");
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
-    var allocator = &arena.allocator;
+    var allocator = &arena.allocator();
     try std.testing.expectEqual(@as(i32, 1446), try day1.num_of_increases(allocator, day1_input));
     try std.testing.expectEqual(@as(i32, 1486), try day1.three_window_num_of_increases(allocator, day1_input));
 }

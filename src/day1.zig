@@ -4,7 +4,7 @@ const print = std.debug.print;
 fn get_number_list(a: *std.mem.Allocator, input: []const u8) anyerror!std.ArrayList(i32) {
     var line_iter = std.mem.split(u8, input, "\n");
 
-    var list = std.ArrayList(i32).init(a);
+    var list = std.ArrayList(i32).init(a.*);
 
     while (true) {
         const m_line = line_iter.next();
@@ -77,13 +77,13 @@ const test_input =
 test "num_of_increases" {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
-    var allocator = &arena.allocator;
+    var allocator = &arena.allocator();
     try std.testing.expectEqual(@as(i32, 7), try num_of_increases(allocator, test_input[0..]));
 }
 
 test "three_window_num_of_increases" {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
-    var allocator = &arena.allocator;
+    var allocator = &arena.allocator();
     try std.testing.expectEqual(@as(i32, 5), try three_window_num_of_increases(allocator, test_input[0..]));
 }
