@@ -45,3 +45,12 @@ test "day5" {
     try std.testing.expectEqual(@as(u32, 5835), try day5.avoid_vents(day5.Diags.exclude, day5_input));
     try std.testing.expectEqual(@as(u32, 17013), try day5.avoid_vents(day5.Diags.include, day5_input));
 }
+
+test "day6" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    var allocator = arena.allocator();
+    const day6 = @import("./day6.zig");
+    const day6_input = @embedFile("../inputs/day6.txt");
+    try std.testing.expectEqual(@as(u64, 0), try day6.num_of_lanternfish(allocator, day6_input, 80));
+}
