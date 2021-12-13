@@ -1,38 +1,38 @@
 const std = @import("std");
 
-pub fn num_of_lanternfish(a: std.mem.Allocator, input: []const u8, daysToSimulate: u64) !u64 {
+pub fn num_of_lanternfish(input: []const u8, daysToSimulate: u64) !u64 {
     var tokens = std.mem.tokenize(u8, std.mem.trim(u8, input, "\n"), ",");
-    var list = std.ArrayList(u64).init(a);
-    defer list.deinit();
+    var ages: [9]u64 = [_]u64{0} ** 9;
+
     while (true) {
         if (tokens.next()) |next| {
-            const int = try std.fmt.parseInt(u64, next, 10);
-            try list.append(int);
+            ages[(try std.fmt.parseInt(u64, next, 10))] += 1;
         } else break;
     }
 
-    var fishToAdd: u64 = 0;
-    var days: u64 = 0;
-    while (days <= daysToSimulate) {
-        while (fishToAdd > 0) {
-            try list.append(8);
-            fishToAdd -= 1;
-        }
-        // std.debug.print("\ndays: {}\n", .{days});
-        // std.debug.print("\nlist: {any}\n", .{list});
-        for (list.items) |*item| {
-            if (item.* == 0) {
-                item.* = 6;
-                fishToAdd += 1;
-                continue;
-            }
-            item.* -= 1;
-        }
-        days += 1;
+    var solution: u64 = 0;
+    for (simulate(daysToSimulate, ages)) |num| {
+        solution += num;
     }
 
-    // std.debug.print("\nlist.items.len: {}\n", .{list.items.len});
-    return list.items.len;
+    return solution;
+}
+
+fn simulate(day: u64, ages: [9]u64) [9]u64 {
+    if (day == 0) {
+        return ages;
+    }
+
+    var new_ages = ages;
+    var i: u64 = 8;
+    while (i > 0) {
+        new_ages[i - 1] = ages[i];
+        i -= 1;
+    }
+    new_ages[6] += ages[0];
+    new_ages[8] = ages[0];
+
+    return simulate(day - 1, new_ages);
 }
 
 const test_input =
@@ -40,9 +40,10 @@ const test_input =
     \\
 ;
 
-test "num_of_lanternfish" {
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    var allocator = arena.allocator();
-    try std.testing.expectEqual(try num_of_lanternfish(allocator, test_input, 80), 5934);
+test "num_of_lanternfish_80" {
+    try std.testing.expectEqual(@as(u64, 5934), try num_of_lanternfish(test_input, 80));
+}
+
+test "num_of_lanternfish_256" {
+    try std.testing.expectEqual(@as(u64, 26984457539), try num_of_lanternfish(test_input, 256));
 }

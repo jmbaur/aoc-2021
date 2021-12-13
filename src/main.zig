@@ -47,10 +47,8 @@ test "day5" {
 }
 
 test "day6" {
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    var allocator = arena.allocator();
     const day6 = @import("./day6.zig");
     const day6_input = @embedFile("../inputs/day6.txt");
-    try std.testing.expectEqual(@as(u64, 0), try day6.num_of_lanternfish(allocator, day6_input, 80));
+    try std.testing.expectEqual(@as(u64, 383160), try day6.num_of_lanternfish(day6_input, 80));
+    try std.testing.expectEqual(@as(u64, 1721148811504), try day6.num_of_lanternfish(day6_input, 256));
 }
